@@ -1,0 +1,60 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jul 13 11:10:10 2019
+
+@author: Yungchi Lo
+"""
+
+import urllib.request as req
+import bs4
+import requests
+import shutil
+
+s=requests.session()
+res=s.get("https://www.tii.org.tw/tii/actuarial/memberLogin/newImage.jsp",stream=True,verify=False)
+f=open('check.jpg','wb')
+shutil.copyfileobj(res.raw,f)
+f.close()
+
+from IPython.display import Image
+Image('check.jpg')
+
+data={}
+data['actId']='TWLI***'
+data['pwd']='****'
+data['insrand']=input('input code:')
+data['sitePathName']='memberLogin'
+data['fromPath']='/actuarial/actuarial6/index.html'
+response=s.post(url='https://www.tii.org.tw/tii/system/modules/com.thesys.project.tii/pages/actuarial/company-login-process.jsp',data=data,headers=headers)
+#print(response.text)
+
+response2=s.post(url='https://www.tii.org.tw/tii/actuarial/actuarial6/index.html')
+
+response3=s.get(url='https://www.tii.org.tw/tii/actuarial/actuarial6/pivot/')
+#print(response3.text)
+
+#chunk that find all xsl file
+#def getUrl(html):
+#   reg = r'(?:href|HREF)="?((?:http://)?.+?\.xsl)'
+#   url_re = re.compile(reg)
+#   url_lst = url_re.findall(html.decode('gb2312'))
+#   return(url_lst)
+#getUrl(page.read('https://www.tii.org.tw/tii/actuarial/actuarial6/pivot/')
+
+url_lst=['http://pivot.tii.org.tw/lifesta/pivomonnew1.xls',
+         'http://pivot.tii.org.tw/lifesta/pivomonprm1.xls',
+         'http://pivot.tii.org.tw/lifesta/pivoyearnew.xls',
+         'http://pivot.tii.org.tw/lifesta/pivoyearprm.xls',
+         'http://pivot.tii.org.tw/lifesta/PivotYearPrm_S.xls']
+for xsl_url in url_lst:
+    file_name = xsl_url.split('/')[-1]
+    r = requests.get(xsl_url,headers=headers) 
+    with open(file_name,'wb') as f: 
+        f.write(r.content)
+        f.close()
+        print ("Sucessful to download" + " " + file_name)
+
+
+
+
+
